@@ -127,3 +127,4 @@ dmypy.json
 
 # Pyre type checker
 .pyre/
+OAUTH2_example/.idea
