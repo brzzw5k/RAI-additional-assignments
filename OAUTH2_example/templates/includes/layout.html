@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html lang="en">
+    {% with title=title %}
+        {% include "includes/head.html" %}
+    {% endwith %}
+    <body>
+        {% include "includes/header.html" %}
+        {% block content %}
+
+        {% endblock content %}
+        {% include "includes/footer.html" %}
+    </body>
+    <script src="https://use.fontawesome.com/670d913f4d.js"></script>
+</html>

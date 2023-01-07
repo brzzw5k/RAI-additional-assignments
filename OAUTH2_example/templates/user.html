@@ -1,0 +1,23 @@
+{% extends "includes/layout.html" %}
+
+{% block content %}
+    <div class="container mt-4">
+        <div class="row">
+            <div class="col-4 align-self-end">
+                <h2> {{ public_user.username }}</h2>
+                <img src="{{ public_user.profile_pic }}" alt="profile image" class="img-fluid ml-2">
+                {% if user == public_user %}
+                    <p>
+                        <i class="fa fa-id-badge"></i> {{ user.id }}
+                    </p>
+                    <p>
+                        <i class="fa fa-user-circle-o"></i> {{ user.name }}
+                    </p>
+                    <p>
+                        <i class="fa fa-envelope"></i> {{ user.email }}
+                    </p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+{% endblock content %}

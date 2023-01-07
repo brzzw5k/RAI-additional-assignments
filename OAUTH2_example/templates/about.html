@@ -1,0 +1,49 @@
+{% extends "includes/layout.html" %}
+
+{% block content %}
+    <div class="p-5 bg-white">
+        <h2>
+            This is an app demonstrates the use of Google's OAuth2 API
+        </h2>
+        <h3>
+            And it really does, preety cool, huh?
+        </h3>
+        <div class="text-muted p-4">
+            <p>
+                OAuth2 is an open standard for authorization that enables third-party applications to obtain limited
+                access to a web server. It works by allowing users to grant third-party access to their resources
+                without sharing their credentials. OAuth2 provides authorization flows for web and desktop applications,
+                and mobile devices.
+            </p>
+            <p>
+                Here's a high-level overview of the OAuth2 authorization process:
+                <ol type="1">
+                    <li>
+                        The user is asked to grant permission for the third-party application to access their resources.
+                    </li>
+                    <li>
+                        The user is redirected to the authorization server to authorize the request.
+                    </li>
+                    <li>
+                        The authorization server authenticates the user and obtains authorization.
+                    </li>
+                    <li>
+                        The authorization server redirects the user back to the third-party application with an
+                        authorization code.
+                    </li>
+                    <li>
+                        The third-party application exchanges the authorization code for an access token.
+                    </li>
+                    <li>
+                        The third-party application can use the access token to access the user's resources.
+                    </li>
+                </ol>
+            </p>
+            <p>
+                OAuth2 is used by many popular websites and applications, including Google, Facebook, and GitHub. It is
+                a secure way for users to grant third-party access to their resources without having to share their
+                login credentials.
+            </p>
+        </div>
+    </div>
+{% endblock content %}
