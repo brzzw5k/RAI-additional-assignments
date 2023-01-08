@@ -1,0 +1,101 @@
+{% extends "includes/layout.html" %}
+
+{% block content %}
+    <div class="p-5 bg-white">
+        <div class="container-fluid">
+            <div class="row" >
+                <div class="col p-0" >
+                    <div class="overflow-auto" style="height: 60vh">
+                        <div id="chat">
+                            {% for message in messages %}
+                                {% if message.sender == user.username %}
+                                    <div class="row mx-0 justify-content-end">
+                                        <div class="bg-primary text-white col-4 rounded m-2 p-2 text-left">
+                                            You: {{ message.message }}
+                                        </div>
+                                    </div>
+                                {% elif message.user == 'System' %}
+                                    <div class="row mx-0 justify-content-center">
+                                        <div class="col-6 text-center"> {{ message.user }}: {{ message.message }}
+                                        </div>
+                                    </div>
+                                {% else %}
+                                    <div class="row mx-0 justify-content-start">
+                                        <div class="bg-secondary text-white col-4 rounded m-2 p-2 text-left">
+                                            {{ message.user }}: {{ message.message }}
+                                        </div>
+                                    </div>
+                                {% endif %}
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="input-group mt-auto p-4">
+                <textarea class="form-control" id="message-input" rows="1"></textarea>
+                <div class="input-group-append">
+                    <a class="btn btn-outline-dark btn-md" role="button" onclick="sendMessage()">Send</a>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock content %}
+
+{% block scripts %}
+    <script
+            src="https://cdn.socket.io/4.5.4/socket.io.min.js"
+            integrity="sha384-/KNQL8Nu5gCHLqwqfQjA689Hhoqgi2S84SNUxC3roTe4EhJ9AfLkp8QiQcU8AMzI"
+            crossorigin="anonymous">
+    </script>
+    <script>
+        const socket = io.connect(location.protocol + '//' + document.domain + ':' + location.port);
+
+        onDOMContentLoaded = (event) => {
+            socket.emit('connect')
+        };
+
+        onbeforeunload = (event) => {
+            socket.emit('disconnect')
+            socket.disconnect()
+        };
+
+        function recieve_message  (sender, message) {
+            const div_row = document.createElement('div');
+            div_row.classList.add('row', 'mx-0');
+            const div = document.createElement('div');
+            if (sender === 'System' ) {
+                div_row.classList.add('justify-content-center');
+                div.classList.add('col-6', 'text-center');
+            }
+            else if (sender === '{{ user.username }}') {
+                sender = 'You'
+                div_row.classList.add('justify-content-end');
+                div.classList.add('bg-primary', 'text-white', 'col-4', 'rounded', 'm-2', 'p-2', 'text-left');
+            }
+            else {
+                div_row.classList.add('justify-content-start');
+                div.classList.add('bg-secondary', 'text-white', 'col-4', 'rounded', 'm-2', 'p-2', 'text-left');
+            }
+            div.innerHTML = sender + ': ' + message;
+            div_row.appendChild(div);
+            document.getElementById('chat').appendChild(div_row);
+        }
+        socket.on('message', data => {
+            recieve_message(data.user, data.message)
+        });
+
+        socket.on('system_message', data => {
+            recieve_message(data.user, data.message)
+        });
+
+        function sendMessage() {
+            const message = document.querySelector('#message-input').value;
+            if (message !== '') {
+                socket.emit('message', message);
+            }
+            document.querySelector('#message-input').value = '';
+
+        }
+
+    </script>
+{% endblock scripts %}

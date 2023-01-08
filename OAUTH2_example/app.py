@@ -2,17 +2,22 @@ from __future__ import print_function
 
 from flask import Flask, render_template, url_for, request, redirect
 from flask_login import LoginManager, current_user, login_user, logout_user, login_required
+from flask_socketio import SocketIO, emit
 
 from google_auth_oauthlib.flow import Flow
 from googleapiclient.discovery import build
 
+from chat_message import ChatMessage
 from user import User
 
 app = Flask(__name__)
 app.secret_key = 'super secret string'
+app.config['SECRET_KEY'] = 'super secret string'
 
 login_manager = LoginManager()
 login_manager.init_app(app)
+
+socketio = SocketIO(app)
 
 SCOPES = [
     'https://www.googleapis.com/auth/userinfo.profile',
@@ -29,14 +34,12 @@ def load_user(user_id):
 @app.route('/index', methods=['GET'])
 @app.route('/', methods=['GET'])
 def index():
-    if current_user.is_authenticated:
-        return render_template('index.html', user=current_user)
-    return render_template('index.html', user=None)
+    return render_template('index.html', user=current_user)
 
 
 @app.route('/about', methods=['GET'])
 def about():
-    return render_template('about.html')
+    return render_template('about.html', user=current_user)
 
 
 @app.route('/login', methods=['GET'])
@@ -98,7 +101,7 @@ def postlogin():
 @app.route('/logout', methods=['GET'])
 def logout():
     logout_user()
-    return render_template('logout.html'), {'Refresh': '3; url=/'}
+    return render_template('logout.html', user=current_user), {'Refresh': '3; url=/'}
 
 
 @app.route('/user/<username>', methods=['GET'])
@@ -107,6 +110,35 @@ def user(username):
     if current_user.username == username:
         return render_template('user.html', user=current_user, public_user=current_user)
     return render_template('user.html', user=current_user, public_user=User.get_public_by_username(username))
+
+
+@app.route('/chat', methods=['GET'])
+@login_required
+def chat():
+    return render_template('chat.html', user=current_user, messages=ChatMessage.get_all())
+
+
+@socketio.on('connect')
+def on_connect():
+    if current_user.is_authenticated:
+        system_message = f'{current_user.username} has joined the chat.'
+        ChatMessage.create(system_message, None)
+        emit('system_message', {'user': 'System', 'message': system_message}, broadcast=True)
+
+
+@socketio.on('disconnect')
+def on_disconnect():
+    if current_user.is_authenticated:
+        system_message = f'{current_user.username} has left the chat'
+        ChatMessage.create(system_message, None)
+        emit('system_message', {'user': 'System', 'message': system_message}, broadcast=True)
+
+
+@socketio.on('message')
+def on_message(message):
+    if current_user.is_authenticated:
+        ChatMessage.create(message, current_user.username)
+        emit('message', {'user': current_user.username, 'message': message}, broadcast=True)
 
 
 if __name__ == '__main__':

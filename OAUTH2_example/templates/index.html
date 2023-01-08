@@ -2,10 +2,10 @@
 
 {% block content %}
     <div class="p-5 text-center bg-white">
-        <h1 class="mb-3">OAuth2 Demo App</h1>
-        <h4 class="mb-3">Lets you sign in with Google</h4>
-        {% if user %}
-            <p>You are logged in as {{ current_user.name }}</p>
+        <h1 class="mb-3">OAuth2 + SocketIO Demo App</h1>
+        <h4 class="mb-3">Lets you sign in with Google and use a chat room</h4>
+        {% if user.is_authenticated %}
+            <p>You are logged in as {{ user.name }}</p>
         {% else %}
             <a class="btn btn-outline-dark btn-lg m-3" href="{{ url_for('login') }}" role="button">Try signing in with Google</a>
         {% endif %}

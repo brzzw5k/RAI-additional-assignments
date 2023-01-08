@@ -3,7 +3,7 @@
     {% with title=title %}
         {% include "includes/head.html" %}
     {% endwith %}
-    <body>
+    <body class>
         {% include "includes/header.html" %}
         {% block content %}
 
@@ -11,4 +11,9 @@
         {% include "includes/footer.html" %}
     </body>
     <script src="https://use.fontawesome.com/670d913f4d.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    {% block scripts %}
+
+    {% endblock scripts %}
 </html>
+
